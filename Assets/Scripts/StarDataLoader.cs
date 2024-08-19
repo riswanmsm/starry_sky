@@ -123,26 +123,27 @@ public class StarDataLoader
                 int sequence_offset = br.ReadInt32();
                 int start_index = br.ReadInt32();
                 int num_stars = -br.ReadInt32(); // Remove the negative sign to get the correct number
-                Debug.Log($"Number of stars to load: {num_stars}");
+                //Debug.Log($"Number of stars to load: {num_stars}");
                 int star_number_settings = br.ReadInt32();
                 int proper_motion_included = br.ReadInt32();
                 int num_magnitudes = br.ReadInt32();
                 int star_data_size = br.ReadInt32();
 
+                int level = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
+
                 for (int i = 0; i < num_stars; i++)
                 {
-                    float catalog_number = br.ReadSingle();
-                    double right_ascension = br.ReadDouble();
-                    double declination = br.ReadDouble();
-                    char spectral_type = br.ReadChar();
-                    byte spectral_index = br.ReadByte();
-                    short magnitude = br.ReadInt16();
-                    float ra_proper_motion = br.ReadSingle();
-                    float dec_proper_motion = br.ReadSingle();
+                        float catalog_number = br.ReadSingle();
+                        double right_ascension = br.ReadDouble();
+                        double declination = br.ReadDouble();
+                        char spectral_type = br.ReadChar();
+                        byte spectral_index = br.ReadByte();
+                        short magnitude = br.ReadInt16();
+                        float ra_proper_motion = br.ReadSingle();
+                        float dec_proper_motion = br.ReadSingle();
 
-                    Star star = new Star(catalog_number, right_ascension, declination, spectral_type, spectral_index, magnitude, ra_proper_motion, dec_proper_motion);
-                    stars.Add(star);
-                    //Debug.Log($"Star Position: {star.position}");
+                        Star star = new Star(catalog_number, right_ascension, declination, spectral_type, spectral_index, magnitude, ra_proper_motion, dec_proper_motion);
+                        stars.Add(star);
                 }
             }
         }
@@ -150,7 +151,7 @@ public class StarDataLoader
         {
             Debug.LogError($"Failed to load star data: {e.Message}");
         }
-
+        Debug.Log($"Number of stars loaded: {stars.Count}");
         return stars;
     }
 }

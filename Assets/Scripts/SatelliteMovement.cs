@@ -1,50 +1,76 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SatelliteMovement : MonoBehaviour
 {
-    public Transform centerPoint;   // The point around which the satellite orbits
-    public float orbitRadius = 10.0f;  // The radius of the satellite's orbit
-    public float orbitPeriod = 5400.0f;  // Time to complete one orbit in seconds (5400s = 90 minutes for LEO)
-    public float inclinationAngle = 0.0f;  // Angle of inclination of the orbit
-
-    private float currentAngle = 0.0f;
-
-    private Renderer satelliteRenderer;
-    private Material satelliteMaterial;
-
-    void Start()
-    {
-        // Get the Renderer component attached to the satellite
-        satelliteRenderer = GetComponent<Renderer>();
-        if (satelliteRenderer != null)
-        {
-            // Get the material of the satellite to modify its emission color
-            satelliteMaterial = satelliteRenderer.material;
-        }
-    }
+    public Transform centerPoint; // The point around which the satellite will orbit
+    public float orbitSpeed = 5f; // Speed of the orbit
+    public float orbitRadius = 10f; // Radius of the orbit
+    public float detectionRange = 10f; // Range to detect the mouse pointer
+    public float attackSpeed = 10f; // Speed when attacking the mouse pointer
+    private bool isAttacking = false; // Whether the satellite is attacking the mouse pointer
+    private float angle; // Current angle of the orbit
 
     void Update()
     {
-        // Calculate the angular speed based on the orbit period
-        float angularSpeed = 2 * Mathf.PI / orbitPeriod;  // Full circle in the given period
-
-        // Calculate the satellite's position in its orbit
-        currentAngle += angularSpeed * Time.deltaTime;
-        float x = orbitRadius * Mathf.Cos(currentAngle);
-        float z = orbitRadius * Mathf.Sin(currentAngle);
-
-        // Apply inclination by rotating around the z-axis
-        Vector3 inclinedPosition = new Vector3(x, Mathf.Sin(inclinationAngle) * x, z);
-        transform.position = centerPoint.position + inclinedPosition;
-
-        // Apply blinking effect by modulating the emission color over time
-        if (satelliteMaterial != null)
+        if (!isAttacking)
         {
-            float blinkIntensity = Mathf.PingPong(Time.time, 1.0f);
-            satelliteMaterial.SetColor("_EmissionColor", Color.white * blinkIntensity);
-            Debug.Log("Satellite is blinking.");
+            // Orbit around the center point
+            OrbitAroundCenter();
+
+            // Detect the mouse pointer
+            DetectMousePointer();
         }
+        else
+        {
+            // Attack the mouse pointer
+            AttackMousePointer();
+        }
+    }
+
+    void OrbitAroundCenter()
+    {
+        angle += orbitSpeed * Time.deltaTime;
+        float x = Mathf.Cos(angle) * orbitRadius;
+        float z = Mathf.Sin(angle) * orbitRadius;
+        transform.position = new Vector3(x, transform.position.y, z) + centerPoint.position;
+    }
+
+    void DetectMousePointer()
+    {
+        //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //RaycastHit hit;
+
+        //if (Physics.Raycast(ray, out hit))
+        //{
+        //    float distanceToMouse = Vector3.Distance(transform.position, hit.point);
+
+        //    if (distanceToMouse <= detectionRange)
+        //    {
+        //        isAttacking = true;
+        //    }
+        //}
+    }
+
+    void AttackMousePointer()
+    {
+        //Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //mousePosition.z = transform.position.z; // Keep z-axis constant if 2D
+
+        //// Move toward the mouse pointer
+        //transform.position = Vector3.MoveTowards(transform.position, mousePosition, attackSpeed * Time.deltaTime);
+
+        //// Check for collision with mouse pointer
+        //if (Vector3.Distance(transform.position, mousePosition) < 0.1f)
+        //{
+        //    EndGame();
+        //}
+    }
+
+    void EndGame()
+    {
+        // Logic to end the game
+        Debug.Log("Game Over: Satellite has attacked the player!");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // Restart the level
     }
 }
